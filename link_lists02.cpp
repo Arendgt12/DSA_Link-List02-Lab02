@@ -1,5 +1,5 @@
 //Jael Johnson
-//CMPS2131 Lab-01
+//CMPS2131 Lab-02
 // Lab 2: Singly Linked List for Username/Password storage
 
 // Goal: Implement a simple credential store using a singly linked list
@@ -46,84 +46,74 @@ bool authorize(User* head, const string& username, const string& action);
 
 int main() {
    User* head = nullptr;
-   // Write code here to test your implementation
-   // Manually inserting users and passwords using insertUser function
-   insertUser(head, "Solo", "T1m3@&Password!");
-   insertUser(head, "Andre", "Z@ni+2023");
-   insertUser(head, "Nadia", "SecreT$&Pa55");
-   insertUser(head, "Carris", "M@G!C12");
-   insertUser(head, "Ajoni", "A1234Password!");
+   
+   // A vector of strings is used for permissions in this version of the code.
+   vector<string> admin_perms = {"view", "edit", "create", "delete", "administer"};
+   vector<string> editor_perms = {"view", "edit", "create"};
+   vector<string> viewer_perms = {"view"};
+   
+   // 1. Insert Users
+   cout << "Inserting users..." << endl;
+   insertUser(head, "Solo", "T1m3@&Password!", admin_perms); // Admin
+   insertUser(head, "Andre", "Z@ni+2023", editor_perms);   // Editor
+   insertUser(head, "Nadia", "SecreT$&Pa55", viewer_perms); // Viewer
+   insertUser(head, "Carris", "M@G!C12");                  // Default (view)
+   insertUser(head, "Ajoni", "A1234Password!", editor_perms);
    insertUser(head, "Henry", "H3nRy$2024");
    insertUser(head, "Keira", "P@ssw0rDKeira!");
    insertUser(head, "Cailen", "Ca!len$17");
    insertUser(head, "Jair", "J@ir@1234");
 
-
+   // 2. Print All Users
    cout << "All users in the list:" << endl;
    printUsers(head);
 
-
+   // 3. Find Users
    cout << "Finding 'Andre' in the list:" << endl;
-   User* foundUser = findUser(head, "Andre");  // O(n)
+   User* foundUser = findUser(head, "Andre");
    if (foundUser) {
-       cout << "Found user: " << foundUser->username << endl;
+       cout << "Found user: " << foundUser->username << endl; 
    } else {
        cout << "User 'Andre' not found." << endl;
    }
 
-
-      cout << "Finding 'Alice' in the list:" << endl;
-   foundUser = findUser(head, "Alice");  // O(n)
+   cout << "Finding 'Alice' in the list:" << endl;
+   foundUser = findUser(head, "Alice");
    if (foundUser) {
        cout << "Found user: " << foundUser->username << endl;
    } else {
        cout << "User 'Alice' not found." << endl;
    }
 
+   // 4. Authorize Users
+   cout << "Authorization Tests:" << endl;
+   
+   // Admin (Solo) attempts actions
+   cout << "Solo 'edit': "
+        << (authorize(head, "Solo", "edit") ? "Allowed" : "Denied") << endl;
+   cout << "Solo 'administer': "
+        << (authorize(head, "Solo", "administer") ? "Allowed" : "Denied") << endl;
 
-   // O(n)
-   cout << "All users in the list:" << endl;
-   printUsers(head); 
-  
-   // O(n)
-   cout << "Authenticate 'Andre' with 'Z@ni+2023': "
-        << (authenticate(head, "Andre", "Z@ni+2023") ? "Success" : "Failure") << endl; 
-   cout << "Authenticate 'Jair' with 'wrongpassword': "
-        << (authenticate(head, "Jair", "wrongpassword") ? "Success" : "Failure") << endl;
-  
-   // O(n)
-   cout << "Removing 'Keira' from the list..." << endl;
-   if (removeByUsername(head, "Keira")) { 
-       cout << "Keira removed." << endl;
-   } else {
-       cout << "Keira not found." << endl;
-   }
-   printUsers(head); //O(n)
+   // Editor (Andre) attempts actions
+   cout << "Andre 'create': "
+        << (authorize(head, "Andre", "create") ? "Allowed" : "Denied") << endl;
+   cout << "Andre 'administer': " // Should be denied
+        << (authorize(head, "Andre", "administer") ? "Allowed" : "Denied") << endl;
 
-
-   // O(1)
-   cout << "Removing the first user (head)..." << endl;
-   if (removeFront(head)) { 
-       cout << "First user removed." << endl;
-   } else {
-       cout << "List is empty, no user to remove." << endl;
-   }
-   printUsers(head);  // O(n)
-
-
-   // O(n)
-   cout << "Current size of the list: " << size(head) << endl; 
-
-
-  
-   cout << "Clearing the list..." << endl;
-   clearList(head);  // O(n)
-   printUsers(head);  // O(1)
-
-
-  
-   cout << "Final size of the list: " << size(head) << endl;  // O(n)
-  
+   // Viewer (Nadia) attempts actions
+   cout << "Nadia 'view': "
+        << (authorize(head, "Nadia", "view") ? "Allowed" : "Denied") << endl;
+   cout << "Nadia 'edit': " // Should be denied
+        << (authorize(head, "Nadia", "edit") ? "Allowed" : "Denied") << endl;
+   
+   // Non-existent user
+   cout << "Bob 'view': "
+        << (authorize(head, "Bob", "view") ? "Allowed" : "Denied") << endl;
+   
+   // Final Print
+   cout << "List after tests:" << endl;
+   printUsers(head);
+   
    return 0;
 }
 
