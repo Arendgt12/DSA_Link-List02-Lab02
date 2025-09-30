@@ -41,6 +41,7 @@ bool removeByUsername(User*& head, const string& username);
 void clearList(User*& head);
 size_t size(User* head);
 void printUsers(User* head);
+bool authorize(User* head, const string& username, const string& action);
 
 
 int main() {
@@ -257,4 +258,15 @@ void printUsers(User* head) {
        current = current->next;
    }
    cout << " -> NULL" << endl;
+}
+
+bool authorize(User* head, const string& username, const string& action) {
+    User* user = findUser(head, username);
+    if (!user) return false;
+
+    for (const string& perm : user->permissions) {
+        if (perm == action) return true;
+    }
+
+    return false;
 }
