@@ -1,5 +1,5 @@
 //Jael Johnson
-//CMPS2131 Lab-01
+//CMPS2131 Lab-02
 // Lab 2: Singly Linked List for Username/Password storage
 
 // Goal: Implement a simple credential store using a singly linked list
@@ -14,6 +14,7 @@
 
 // ADD HEADER FILES HERE
 #include <iostream>
+#include <vector>
 using namespace std;
 // -----------------------------
 // Data Model
@@ -21,19 +22,16 @@ using namespace std;
 struct User {
     string username;
     string password; 
-    string role;
     User* next;
     
-    User(string u, string p, string r = "viewer") {
+    User(string u, string p) {
         username = u;
         password = p;
-        role = r;
         next = nullptr;
     }
 };
 
-// Default argument specified here (Declaration)
-bool insertUser(User*& head, const string& username, const string& password, const string& role = "viewer");
+bool insertUser(User*& head, const string& username, const string& password);
 User* findUser(User* head, const string& username);
 bool authenticate(User* head, const string& username, const string& password);
 bool removeFront(User*& head);
@@ -45,15 +43,14 @@ bool authorize(User* head, const string& username, const string& action);
 
 
 int main() {
- User* head = nullptr;
-   
-   // 1. Insert Users
-   cout << "Inserting users..." << endl;
-   insertUser(head, "Solo", "T1m3@&Password!", "admin");
-   insertUser(head, "Andre", "Z@ni+2023", "editor");
+   User* head = nullptr;
+   // Write code here to test your implementation
+   // Manually inserting users and passwords using insertUser function
+   insertUser(head, "Solo", "T1m3@&Password!");
+   insertUser(head, "Andre", "Z@ni+2023");
    insertUser(head, "Nadia", "SecreT$&Pa55");
    insertUser(head, "Carris", "M@G!C12");
-   insertUser(head, "Ajoni", "A1234Password!", "editor");
+   insertUser(head, "Ajoni", "A1234Password!");
    insertUser(head, "Henry", "H3nRy$2024");
    insertUser(head, "Keira", "P@ssw0rDKeira!");
    insertUser(head, "Cailen", "Ca!len$17");
@@ -67,7 +64,7 @@ int main() {
    cout << "Finding 'Andre' in the list:" << endl;
    User* foundUser = findUser(head, "Andre");
    if (foundUser) {
-       cout << "Found user: " << foundUser->username << " (Role: " << foundUser->role << ")" << endl;
+       cout << "Found user: " << foundUser->username << endl;
    } else {
        cout << "User 'Andre' not found." << endl;
    }
@@ -80,37 +77,50 @@ int main() {
        cout << "User 'Alice' not found." << endl;
    }
 
-   // 4. Authorize Users
-   cout << "Authorization Tests:" << endl;
-   
-   // Admin (Solo) attempts actions
-   cout << "Solo (admin) 'edit': "
-        << (authorize(head, "Solo", "edit") ? "Allowed" : "Denied") << endl;
-   cout << "Solo (admin) 'delete': "
-        << (authorize(head, "Solo", "delete") ? "Allowed" : "Denied") << endl;
 
-   // Editor (Andre) attempts actions
-   cout << "Andre (editor) 'create': "
-        << (authorize(head, "Andre", "create") ? "Allowed" : "Denied") << endl;
-   cout << "Andre (editor) 'delete': "
-        << (authorize(head, "Andre", "delete") ? "Allowed" : "Denied") << endl;
+   // O(n)
+   cout << "All users in the list:" << endl;
+   printUsers(head); 
+  
+   // O(n)
+   cout << "Authenticate 'Andre' with 'Z@ni+2023': "
+        << (authenticate(head, "Andre", "Z@ni+2023") ? "Success" : "Failure") << endl; 
+   cout << "Authenticate 'Jair' with 'wrongpassword': "
+        << (authenticate(head, "Jair", "wrongpassword") ? "Success" : "Failure") << endl;
+  
+   // O(n)
+   cout << "Removing 'Keira' from the list..." << endl;
+   if (removeByUsername(head, "Keira")) { 
+       cout << "Keira removed." << endl;
+   } else {
+       cout << "Keira not found." << endl;
+   }
+   printUsers(head); //O(n)
 
-   // Viewer (Nadia) attempts actions
-   cout << "Nadia (viewer) 'view': "
-        << (authorize(head, "Nadia", "view") ? "Allowed" : "Denied") << endl;
-   cout << "Nadia (viewer) 'edit': "
-        << (authorize(head, "Nadia", "edit") ? "Allowed" : "Denied") << endl;
-   
-   // Non-existent user
-   cout << "Bob 'view': "
-        << (authorize(head, "Bob", "view") ? "Allowed" : "Denied") << endl;
-   
-   cout << "List after tests:" << endl;
-   printUsers(head);
-   
-   // FIX: Added clearList to deallocate memory and prevent leaks
-   clearList(head);
-   
+
+   // O(1)
+   cout << "Removing the first user (head)..." << endl;
+   if (removeFront(head)) { 
+       cout << "First user removed." << endl;
+   } else {
+       cout << "List is empty, no user to remove." << endl;
+   }
+   printUsers(head);  // O(n)
+
+
+   // O(n)
+   cout << "Current size of the list: " << size(head) << endl; 
+
+
+  
+   cout << "Clearing the list..." << endl;
+   clearList(head);  // O(n)
+   printUsers(head);  // O(1)
+
+
+  
+   cout << "Final size of the list: " << size(head) << endl;  // O(n)
+  
    return 0;
 }
 
@@ -122,11 +132,12 @@ int main() {
 // Inserts a new (username, password) at the END of the list.
 // If username already exists, do NOT insert a duplicate; return false.
 // Otherwise insert and return true.
-// FIX: Default argument removed here to prevent compilation error
-bool insertUser(User*& head, const string& username, const string& password, const string& role) {
+bool insertUser(User*& head, const string& username, const string& password) {
     if (findUser(head, username)) return false;
 
-    User* newUser = new User(username, password, role);
+
+   User* newUser = new User(username, password);
+
 
     if (!head) {
         head = newUser;
@@ -246,19 +257,4 @@ void printUsers(User* head) {
        current = current->next;
    }
    cout << " -> NULL" << endl;
-}
-
-bool authorize(User* head, const string& username, const string& action) {
-    User* user = findUser(head, username);
-    if (!user) return false;
-
-    if (user->role == "admin") {
-        return true;
-    } else if (user->role == "editor") {
-        return (action == "view" || action == "edit" || action == "create");
-    } else if (user->role == "viewer") {
-        return (action == "view");
-    }
-
-    return false;
 }
