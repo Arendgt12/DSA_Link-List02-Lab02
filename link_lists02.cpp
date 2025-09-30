@@ -44,86 +44,69 @@ bool authorize(User* head, const string& username, const string& action);
 
 
 int main() {
-   User* head = nullptr;
-   // Write code here to test your implementation
-   // Manually inserting users and passwords using insertUser function
-   insertUser(head, "Solo", "T1m3@&Password!");
-   insertUser(head, "Andre", "Z@ni+2023");
+ User* head = nullptr;
+   
+   // 1. Insert Users
+   cout << "Inserting users..." << endl;
+   insertUser(head, "Solo", "T1m3@&Password!", "admin");
+   insertUser(head, "Andre", "Z@ni+2023", "editor");
    insertUser(head, "Nadia", "SecreT$&Pa55");
    insertUser(head, "Carris", "M@G!C12");
-   insertUser(head, "Ajoni", "A1234Password!");
+   insertUser(head, "Ajoni", "A1234Password!", "editor");
    insertUser(head, "Henry", "H3nRy$2024");
    insertUser(head, "Keira", "P@ssw0rDKeira!");
    insertUser(head, "Cailen", "Ca!len$17");
    insertUser(head, "Jair", "J@ir@1234");
 
-
+   // 2. Print All Users
    cout << "All users in the list:" << endl;
    printUsers(head);
 
-
+   // 3. Find Users
    cout << "Finding 'Andre' in the list:" << endl;
-   User* foundUser = findUser(head, "Andre");  // O(n)
+   User* foundUser = findUser(head, "Andre");
    if (foundUser) {
-       cout << "Found user: " << foundUser->username << endl;
+       cout << "Found user: " << foundUser->username << " (Role: " << foundUser->role << ")" << endl;
    } else {
        cout << "User 'Andre' not found." << endl;
    }
 
-
-      cout << "Finding 'Alice' in the list:" << endl;
-   foundUser = findUser(head, "Alice");  // O(n)
+   cout << "Finding 'Alice' in the list:" << endl;
+   foundUser = findUser(head, "Alice");
    if (foundUser) {
        cout << "Found user: " << foundUser->username << endl;
    } else {
        cout << "User 'Alice' not found." << endl;
    }
 
+   // 4. Authorize Users
+   cout << "Authorization Tests:" << endl;
+   
+   // Admin (Solo) attempts actions
+   cout << "Solo (admin) 'edit': "
+        << (authorize(head, "Solo", "edit") ? "Allowed" : "Denied") << endl;
+   cout << "Solo (admin) 'delete': "
+        << (authorize(head, "Solo", "delete") ? "Allowed" : "Denied") << endl;
 
-   // O(n)
-   cout << "All users in the list:" << endl;
-   printUsers(head); 
-  
-   // O(n)
-   cout << "Authenticate 'Andre' with 'Z@ni+2023': "
-        << (authenticate(head, "Andre", "Z@ni+2023") ? "Success" : "Failure") << endl; 
-   cout << "Authenticate 'Jair' with 'wrongpassword': "
-        << (authenticate(head, "Jair", "wrongpassword") ? "Success" : "Failure") << endl;
-  
-   // O(n)
-   cout << "Removing 'Keira' from the list..." << endl;
-   if (removeByUsername(head, "Keira")) { 
-       cout << "Keira removed." << endl;
-   } else {
-       cout << "Keira not found." << endl;
-   }
-   printUsers(head); //O(n)
+   // Editor (Andre) attempts actions
+   cout << "Andre (editor) 'create': "
+        << (authorize(head, "Andre", "create") ? "Allowed" : "Denied") << endl;
+   cout << "Andre (editor) 'delete': "
+        << (authorize(head, "Andre", "delete") ? "Allowed" : "Denied") << endl;
 
-
-   // O(1)
-   cout << "Removing the first user (head)..." << endl;
-   if (removeFront(head)) { 
-       cout << "First user removed." << endl;
-   } else {
-       cout << "List is empty, no user to remove." << endl;
-   }
-   printUsers(head);  // O(n)
-
-
-   // O(n)
-   cout << "Current size of the list: " << size(head) << endl; 
-
-
-  
-   cout << "Clearing the list..." << endl;
-   clearList(head);  // O(n)
-   printUsers(head);  // O(1)
-
-
-  
-   cout << "Final size of the list: " << size(head) << endl;  // O(n)
-  
-   return 0;
+   // Viewer (Nadia) attempts actions
+   cout << "Nadia (viewer) 'view': "
+        << (authorize(head, "Nadia", "view") ? "Allowed" : "Denied") << endl;
+   cout << "Nadia (viewer) 'edit': "
+        << (authorize(head, "Nadia", "edit") ? "Allowed" : "Denied") << endl;
+   
+   // Non-existent user
+   cout << "Bob 'view': "
+        << (authorize(head, "Bob", "view") ? "Allowed" : "Denied") << endl;
+   
+   cout << "List after tests:" << endl;
+   printUsers(head);
+   
 }
 
 
