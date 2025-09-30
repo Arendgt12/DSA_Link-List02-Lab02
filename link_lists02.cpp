@@ -126,7 +126,6 @@ int main() {
 bool insertUser(User*& head, const string& username, const string& password, const string& role) {
     if (findUser(head, username)) return false;
 
-    // The User constructor handles the default role if not provided by the caller
     User* newUser = new User(username, password, role);
 
     if (!head) {
