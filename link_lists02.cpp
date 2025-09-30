@@ -33,7 +33,7 @@ struct User {
     }
 };
 
-bool insertUser(User*& head, const string& username, const string& password);
+bool insertUser(User*& head, const string& username, const string& password, vector<string> permissions = {"view"});
 User* findUser(User* head, const string& username);
 bool authenticate(User* head, const string& username, const string& password);
 bool removeFront(User*& head);
@@ -134,25 +134,22 @@ int main() {
 // Inserts a new (username, password) at the END of the list.
 // If username already exists, do NOT insert a duplicate; return false.
 // Otherwise insert and return true.
-bool insertUser(User*& head, const string& username, const string& password) {
+bool insertUser(User*& head, const string& username, const string& password, vector<string> permissions = {"view"}) {
     if (findUser(head, username)) return false;
 
+    User* newUser = new User(username, password, permissions);
 
-   User* newUser = new User(username, password);
+    if (!head) {
+        head = newUser;
+        return true;
+    }
 
-
-   if (!head) {
-       head = newUser;
-       return true;
-   }
-
-
-   User* current = head;
-   while (current->next) {
-       current = current->next;
-   }
-   current->next = newUser;
-   return true;
+    User* current = head;
+    while (current->next) {
+        current = current->next;
+    }
+    current->next = newUser;
+    return true;
 }
 
 
