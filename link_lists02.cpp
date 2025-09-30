@@ -14,6 +14,7 @@
 
 // ADD HEADER FILES HERE
 #include <iostream>
+#include <vector>
 using namespace std;
 // -----------------------------
 // Data Model
@@ -21,11 +22,13 @@ using namespace std;
 struct User {
     string username;
     string password; 
+    vector<string> permissions; 
     User* next;
     
-    User(string u, string p) {
+    User(string u, string p, vector<string> perms = {"view"}) {
         username = u;
         password = p;
+        permissions = perms;
         next = nullptr;
     }
 };
