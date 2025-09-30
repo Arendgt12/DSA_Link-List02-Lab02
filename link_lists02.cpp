@@ -32,6 +32,7 @@ struct User {
     }
 };
 
+// Default argument specified here (Declaration)
 bool insertUser(User*& head, const string& username, const string& password, const string& role = "viewer");
 User* findUser(User* head, const string& username);
 bool authenticate(User* head, const string& username, const string& password);
@@ -107,6 +108,10 @@ int main() {
    cout << "List after tests:" << endl;
    printUsers(head);
    
+   // FIX: Added clearList to deallocate memory and prevent leaks
+   clearList(head);
+   
+   return 0;
 }
 
 
@@ -117,9 +122,11 @@ int main() {
 // Inserts a new (username, password) at the END of the list.
 // If username already exists, do NOT insert a duplicate; return false.
 // Otherwise insert and return true.
-bool insertUser(User*& head, const string& username, const string& password, const string& role = "viewer") {
+// FIX: Default argument removed here to prevent compilation error
+bool insertUser(User*& head, const string& username, const string& password, const string& role) {
     if (findUser(head, username)) return false;
 
+    // The User constructor handles the default role if not provided by the caller
     User* newUser = new User(username, password, role);
 
     if (!head) {
