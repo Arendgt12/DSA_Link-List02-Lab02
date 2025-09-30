@@ -21,11 +21,13 @@ using namespace std;
 struct User {
     string username;
     string password; 
+    string role;
     User* next;
     
-    User(string u, string p) {
+    User(string u, string p, string r = "viewer") {
         username = u;
         password = p;
+        role = r;
         next = nullptr;
     }
 };
